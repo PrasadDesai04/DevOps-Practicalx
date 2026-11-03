@@ -1,0 +1,39 @@
+name: Java CI-CD Pipeline
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Build Application
+        run: javac Hello.java
+
+      - name: Run Test
+        run: |
+          output=$(java Hello)
+          echo "$output"
+          test "$output" = "Hello from GitHub Actions"
+
+  deploy:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deployment
+        run: echo "Application deployed successfully!"
